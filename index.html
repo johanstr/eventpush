@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Push Client</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            border: 1px solid blue;
+            width: 100%;
+        }
+
+        table tr td {
+            border: 1px solid blue;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Getting server updates</h1>
+<div id="result"></div>
+
+<script>
+    var content = '';
+
+    function parseRecords(rec) {
+        content = '<table><tr><td>ID</td><td>User</td><td>Title</td><td>Content</td></tr>';
+        rec.forEach(function(element, index, array) {
+            content += '<tr><td>' + element.id +
+                        '</td><td>' + element.user +
+                        '</td><td>' + element.title +
+                        '</td><td>' + element.content + '</td></tr>';
+        });
+        content += '</table>';
+
+        return content;
+    }
+
+    if(typeof(EventSource) !== "undefined") {
+        var source = new EventSource("eventpush.php");
+        source.onmessage = function(event) {
+            var records = JSON.parse(event.data);
+            document.getElementById("result").innerHTML = parseRecords(records) + "<br />";
+        };
+    } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+    }
+</script>
+</body>
+</html>
